@@ -1,0 +1,35 @@
+1. __main__.py is not changed. Run __main__.py without adjusting for path to the input file. Output file is generated in the same folder where __main__.py is located.
+
+2. index.py contains class and methods to run. Main interest lies in calc_index_level. The procedure of index construction is following:
+	2.1. Convert time to appropriate format (line 14)
+	2.2. Create dataframe that contains flag of day at the end of which index is rebalanced (line 15)
+	2.3. Create matrix of stock return (line 16)
+	2.4. Create a column with names of selected stocks to from index based on requirements (line 17-20)
+	2.5. Change stock prices to stock returns (line 21)
+	2.6. Create a new dataframe called Index. Numbers are taken from initial dataframe conditional on column with names of selected stocks to form index (line 23-28)
+	2.7. Apply index date frame (line 29)
+	2.8. Calculate index value (line 30-33)
+	2.9. Clean Index dataframe (line 34)
+
+3. Results do not totally fit the results given in index_level_results_rounded.csv. To verify where could be potential reason, I manually calculate index. Refer please to index_test.py.
+   To use it, change in __main__.py line 3 from "from index_model.index import IndexModel" to "from index_model.index_test import IndexModel". The logic is straigtforward. We invest money
+   in the end of first trading day of each month, and thus rebalance our index. The value of our index and the market value of new index are different, as we select new stocks.
+   For this reason, I create adjustment factor and multiply it on market value of new index to get true value of rebalanced index.
+	3.1. Convert time to appropriate format (line 14)
+	3.2. Create dataframe that contains flag of day at the end of which index is rebalanced (line 15)
+	3.3. Create a column with names of selected stocks to from index based on requirements (line 16-20)
+	3.4. Create a new dataframe called Index. First three columns are equivalent to stock prices that are valid for correctly rebalanced index, i.e. index is rebalanced at the end of first
+	     trading day of new month. The last three columns differ only at the first trading day of each new month. They contain here values equivalent to values of rebalanced index formed at the
+	     beginning of first trading day of new month. This is the key and only difference (line 22-30)
+	3.5. Apply index date frame (line 31)
+	3.6. Calculate indeces values.  Value_start_unadj is value for correct index and Value_end_unadj is for second one (line 32-36)
+	3.7. Create condition column inside Index dataframe that shows when the true index must be rebalanced and prepare for calculations. Here I also create adjustment factor, adj (line 37-41)
+	3.8. In loop I calculate:
+		3.8.1. If we are in the first day when we have newly updated index, adjustment factor is equal to ratio of last true index value to market value of new index. For example, we have
+			90$ left from last index and new index costs 95$. We don't pay 95$, as we have only 90$. For this reason stock hodlings in index must be adjusted for factor 90/95 (line 42-45)
+		3.8.2. If we are in any other day, then we keep the same adjustment factor and multiply it with market value of held index (NOT ACTUAL VALUE, because we invested less than it costed
+			initially) (line 46-48)
+	3.9. Clean Index dataframe (line 49)
+
+4. Even with test method reults do not totally coincide. From here I assume that there should be some other adjustments in index construction or there is an issue with rounding.
+
